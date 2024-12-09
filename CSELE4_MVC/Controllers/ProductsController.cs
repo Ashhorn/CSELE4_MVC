@@ -57,26 +57,26 @@ namespace CSELE4_MVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create( Products products, IFormFileService formFileService)
+        public async Task<IActionResult> CreateAsync(ProductViewModel products)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(products);
-            }
-
             try
             {
-                var new_product = new Products
+                if (ModelState.IsValid)
                 {
-                    Name = products.Name,
-                    Description = products.Description,
-                    Category = products.Category,
-                    Price = products.Price,
-                    Content = _formFileService.ConvertToByteArray(products.FormFile)
-                };
+                    var new_product = new Products
+                    {
+                        Name = products.Name,
+                        Description = products.Description,
+                        Category = products.Category,
+                        Price = products.Price,
+                        Content = _formFileService.ConvertToByteArray(products.FormFile)
+                    };
 
-                _context.Products.Add(new_product);
-                await _context.SaveChangesAsync();
+                    _context.Products.Add(new_product);
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction("Index");
+                }
             }
             catch (ArgumentException ex)
             {
